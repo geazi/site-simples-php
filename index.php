@@ -1,3 +1,15 @@
+<?php
+$rota = parse_url("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+$path = str_replace("/", "", $rota['path']);
+
+$rotaVerificada = verificaRota($path);
+
+if ($rotaVerificada == "erro.php") {
+  http_response_code(404);
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -29,26 +41,16 @@
 		<div class="span2"> 
 			<h2> Menu </h2> 
 			<ul class="nav nav-tabs nav-stacked"> 
-				<li> <a href="index.php?file=home.php"> <i class="icon-star"></i> Home </a> </li>
-				<li> <a href="index.php?file=empresa.php"> <i class="icon-star"></i> Empresa </a> </li> 
-				<li> <a href="index.php?file=produtos.php"> <i class="icon-star"></i> Produtos </a> </li> 
-				<li> <a href="index.php?file=servicos.php"> <i class="icon-star"></i> Serviços </a> </li> 
-				<li> <a href="index.php?file=contato.php"> <i class="icon-star"></i> Contato </a> </li> 
+				<li> <a href="/home"> <i class="icon-star"></i> Home </a> </li>
+				<li> <a href="/empresa"> <i class="icon-star"></i> Empresa </a> </li> 
+				<li> <a href="/produtos"> <i class="icon-star"></i> Produtos </a> </li> 
+				<li> <a href="/servicos"> <i class="icon-star"></i> Serviços </a> </li> 
+				<li> <a href="/contato"> <i class="icon-star"></i> Contato </a> </li> 
 			</ul> 
 		</div>
 
 <?php
-
-if ($_GET["file"] == "") {
-   require_once("home.php");
-} else {
-	if (file_exists($_GET["file"])) {
-		require_once($_GET["file"]);
-	} else {
-		require_once("erro.php");
-	}
-   
-}
+	require_once($rotaVerificada);
 ?>
 
 	</div>
@@ -56,6 +58,29 @@ if ($_GET["file"] == "") {
 
 <?php 
    require_once("footer.php");
+?>
+
+<?php
+function verificaRota($qualRota) { 
+	$rotas = array(
+		"home"         => "home.php",
+		"empresa"      => "empresa.php",
+		"produtos"     => "produtos.php",
+		"servicos"     => "servicos.php",
+		"contato"      => "contato.php",
+		"erro"         => "erro.php",
+		);
+
+	if ($qualRota == "") {
+		$qualRota = 'home';
+	}
+
+	if (!file_exists($rotas[$qualRota])) {
+		$qualRota = 'erro';
+	}
+	return $rotas[$qualRota]; 
+} 
+
 ?>
 
 </body>
